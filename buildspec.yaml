@@ -21,11 +21,6 @@
         - docker push $ECR_REPO:latest # Pushing Image to ECR
         - docker push $ECR_REPO:$IMAGE_TAG
 
-  artifacts:
-    base-directory: deploy # Relevant for deploying on EC2
-    files:
-      - '**/*'
-
   cache:
     paths:
       - '/root/node_modules/**/*' # Custom cache for quicker builds
