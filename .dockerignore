@@ -1,0 +1,7 @@
+Dockerfile
+docker-compose.yaml
+
+test
+*.env
+*.md
+node_modules

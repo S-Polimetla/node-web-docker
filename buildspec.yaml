@@ -1,0 +1,31 @@
+  version: 0.2
+
+  phases:
+    install:
+      runtime-versions:
+        nodejs: 10 # Installing Node.js 10
+        docker: 18 # Installing Docker 18
+    pre_build:
+      commands:
+        - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+    build:
+      commands:
+        - npm install # Installing dependencies
+        - npm run lint # Run linter
+        - npm run test # Run unit tests
+        - docker build -t $ECR_REPO:latest . # Building docker image
+        - docker tag $ECR_REPO:latest $ECR_REPO:$IMAGE_TAG # Tagging docker image with 
+    post_build:
+      commands:
+        - $(aws ecr get-login --no-include-email --region $AWS_REGION) # Login to AWS ECR      
+        - docker push $ECR_REPO:latest # Pushing Image to ECR
+        - docker push $ECR_REPO:$IMAGE_TAG
+
+  artifacts:
+    base-directory: deploy # Relevant for deploying on EC2
+    files:
+      - '**/*'
+
+  cache:
+    paths:
+      - '/root/node_modules/**/*' # Custom cache for quicker builds
